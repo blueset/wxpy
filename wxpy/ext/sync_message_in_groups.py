@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from binascii import crc32
 
-from wxpy.utils import start_new_thread
+from ..utils import start_new_thread
 
 emojis = \
     '😀😁😂🤣😃😄😅😆😉😊😋😎😍😘😗😙😚🙂🤗🤔😐😑😶🙄😏😣😥😮🤐😯' \

@@ -2,7 +2,11 @@
 # coding: utf-8
 
 """
+wxpy forked by Eana Hufwe (github/blueset) for EFB WeChat Slave
 
+Changes:
+    * Identifies more system accounts.
+    * Allow to send file by IO[bytes] objects with newer itchat
 
 登陆微信::
 
@@ -67,7 +71,7 @@ from .ext import Tuling, WeChatLoggingHandler, XiaoI, get_wechat_logger, sync_me
 from .utils import BaseRequest, detect_freq_limit, dont_raise_response_error, embed, ensure_one, mutual_friends
 
 __title__ = 'wxpy'
-__version__ = '0.3.9.8'
+__version__ = '0.3.9.8.mod.EWS'
 __author__ = 'Youfou'
 __license__ = 'MIT'
 __copyright__ = '2017, Youfou'

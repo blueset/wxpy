@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import logging
 
-from wxpy.utils import get_receiver
+from ..utils import get_receiver
 
 logger = logging.getLogger(__name__)
 

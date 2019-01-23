@@ -5,8 +5,8 @@ import logging
 import time
 from collections import Counter
 
-from wxpy.utils import match_attributes, match_name
-from wxpy.compatible import *
+from ...utils import match_attributes, match_name
+from ...compatible import *
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class Chats(list):
         def attr_stat(objects, attr_name):
             return Counter(list(map(lambda x: getattr(x, attr_name), objects)))
 
-        from wxpy.utils import ensure_list
+        from ...utils import ensure_list
         attribs = ensure_list(attribs)
         ret = dict()
         for attr in attribs:
@@ -79,9 +79,9 @@ class Chats(list):
         """
 
         from .group import Group
-        from wxpy.api.consts import FEMALE
-        from wxpy.api.consts import MALE
-        from wxpy.api.bot import Bot
+        from ...api.consts import FEMALE
+        from ...api.consts import MALE
+        from ...api.bot import Bot
 
         def top_n_text(attr, n):
             top_n = list(filter(lambda x: x[0], stats[attr].most_common()))[:n]

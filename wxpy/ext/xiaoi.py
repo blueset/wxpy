@@ -8,14 +8,14 @@ import logging
 
 import requests
 
-from wxpy.api.messages import Message
-from wxpy.ext.talk_bot_utils import get_context_user_id, next_topic
-from wxpy.utils.misc import get_text_without_at_bot
-from wxpy.utils import enhance_connection
+from ..api.messages import Message
+from ..ext.talk_bot_utils import get_context_user_id, next_topic
+from ..utils.misc import get_text_without_at_bot
+from ..utils import enhance_connection
 
 logger = logging.getLogger(__name__)
 
-from wxpy.compatible import *
+from ..compatible import *
 
 class XiaoI(object):
     """

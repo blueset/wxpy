@@ -1,11 +1,29 @@
+wxpy (Modified for EWS)
+=======================
+
+This is a modified version of the libarary wxpy_ specially for 
+`EFB WeChat Slave`_ (EWS), due to its discontinuation since July 2017.
+
+Note that this modified library might not work without EWS and is 
+updated in an irregular pace. 
+
+``wxpy`` is a library developed by youfou under MIT license. ``wxpy EWS Mod``
+is released under the same license.
+
+Original ``README`` is kept as follows.
+
+.. _wxpy: https://github.com/youfou/wxpy
+.. _EFB WeChat Slave: https://github.com/blueset/efb-wechat-slave
+
+
 wxpy: 用 Python 玩微信
-==============================
+------------------------------
 
 .. image:: https://badge.fury.io/py/wxpy.svg
     :target: https://badge.fury.io/py/wxpy
 
 .. image:: https://img.shields.io/pypi/pyversions/wxpy.svg
-        :target: https://github.com/youfou/wxpy
+    :target: https://github.com/youfou/wxpy
 
 .. image:: https://readthedocs.org/projects/wxpy/badge/?version=latest
     :target: http://wxpy.readthedocs.io/zh/latest/?badge=latest

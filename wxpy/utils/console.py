@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import inspect
 
-from wxpy.compatible import PY2
+from ..compatible import PY2
 
 
 def _ipython(local, banner):
@@ -145,7 +145,7 @@ def shell_entry():
         except KeyboardInterrupt:
             return
 
-        banner = 'from wxpy import *\n'
+        banner = 'from . import *\n'
 
         for k, v in bots.items():
             banner += '{}: {}\n'.format(k, v)

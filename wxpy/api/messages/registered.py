@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import weakref
 
-from wxpy.api.consts import SYSTEM
+from ...api.consts import SYSTEM
 
 
 class Registered(list):

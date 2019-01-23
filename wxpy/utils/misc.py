@@ -12,8 +12,8 @@ from functools import wraps
 import requests
 from requests.adapters import HTTPAdapter
 
-from wxpy.compatible import PY2
-from wxpy.exceptions import ResponseError
+from ..compatible import PY2
+from ..exceptions import ResponseError
 
 if PY2:
     from future.builtins import str
@@ -77,7 +77,7 @@ def handle_response(to_class=None):
                 else:
                     self = inspect.currentframe().f_back.f_locals.get('self')
 
-                from wxpy.api.bot import Bot
+                from ..api.bot import Bot
                 if isinstance(self, Bot):
                     bot = weakref.proxy(self)
                 else:
@@ -90,12 +90,12 @@ def handle_response(to_class=None):
                 ret = smart_map(to_class, ret, bot)
 
                 if isinstance(ret, list):
-                    from wxpy.api.chats import Group
+                    from ..api.chats import Group
                     if to_class == Group:
-                        from wxpy.api.chats import Groups
+                        from ..api.chats import Groups
                         ret = Groups(ret)
                     else:
-                        from wxpy.api.chats import Chats
+                        from ..api.chats import Chats
                         ret = Chats(ret, bot)
 
             return ret
@@ -215,7 +215,7 @@ def wrap_user_name(user_or_users):
     :return: 单个用户字典，或列表形式的多个用户字典
     """
 
-    from wxpy.api.chats import Chat
+    from ..api.chats import Chat
 
     def wrap_one(x):
         if isinstance(x, dict):
@@ -242,7 +242,7 @@ def get_user_name(user_or_users):
     :return: 返回单个 user_name 字串，或列表形式的多个 user_name 字串
     """
 
-    from wxpy.api.chats import Chat
+    from ..api.chats import Chat
 
     def get_one(x):
         if isinstance(x, Chat):
@@ -273,8 +273,8 @@ def get_receiver(receiver=None):
     :rtype: :class:`wxpy.Chat`
     """
 
-    from wxpy.api.chats import Chat
-    from wxpy.api.bot import Bot
+    from ..api.chats import Chat
+    from ..api.bot import Bot
 
     if isinstance(receiver, Chat):
         return receiver
@@ -358,7 +358,7 @@ def repr_message(msg):
     用于 Message 和 SentMessage 对象的 __repr__ 和 __unicode__
     """
 
-    from wxpy.api.chats import Group
+    from ..api.chats import Group
 
     text = (str(msg.text or '')).replace('\n', ' ↩ ')
     text += ' ' if text else ''
@@ -384,7 +384,7 @@ def get_text_without_at_bot(msg):
     :rtype: str
     """
 
-    from wxpy.api.chats import Group
+    from ..api.chats import Group
 
     text = msg.text
 

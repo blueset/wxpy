@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 
 import logging
 
-from wxpy.compatible.utils import force_encoded_string_output
-from wxpy.utils import repr_message
+from ...compatible.utils import force_encoded_string_output
+from ...utils import repr_message
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ class SentMessage(object):
         """
         若在群聊中发送消息，则为群员
         """
-        from wxpy import Group
+        from ... import Group
 
         if isinstance(self.receiver, Group):
             return self.receiver.self
@@ -109,7 +109,7 @@ class SentMessage(object):
 
         logger.info('recalling msg:\n{}'.format(self))
 
-        from wxpy.utils import BaseRequest
+        from ...utils import BaseRequest
         req = BaseRequest(self.bot, '/webwxrevokemsg')
         req.data.update({
             "ClientMsgId": self.local_id,

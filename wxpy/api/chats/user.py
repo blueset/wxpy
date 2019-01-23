@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import logging
 
-from wxpy.utils import handle_response
+from ...utils import handle_response
 from .chat import Chat
 
 logger = logging.getLogger(__name__)

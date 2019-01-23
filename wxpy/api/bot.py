@@ -28,20 +28,21 @@ from ..utils import enhance_connection, enhance_webwx_request, ensure_list, get_
     start_new_thread, wrap_user_name
 
 logger = logging.getLogger(__name__)
+itchat.set_logging(showOnCmd=False, loggingLevel=logging.NOTSET)
 
 
 class Bot(object):
     """
     机器人对象，用于登陆和操作微信账号，涵盖大部分 Web 微信的功能::
     
-        from wxpy import *
+        from .. import *
         bot = Bot()
         
         # 机器人账号自身
         myself = bot.self
         
         # 向文件传输助手发送消息
-        bot.file_helper.send('Hello from wxpy!')
+        bot.file_helper.send('Hello from ..!')
         
 
     """
@@ -108,7 +109,7 @@ class Bot(object):
         self.listening_thread = None
 
         if PY2:
-            from wxpy.compatible.utils import TemporaryDirectory
+            from ..compatible.utils import TemporaryDirectory
             self.temp_dir = TemporaryDirectory(prefix='wxpy_')
         else:
             self.temp_dir = tempfile.TemporaryDirectory(prefix='wxpy_')
@@ -398,7 +399,7 @@ class Bot(object):
         if user_name:
             return Group(self.core.update_chatroom(userName=user_name), self)
         else:
-            from wxpy.utils import decode_text_from_webwx
+            from ...utils import decode_text_from_webwx
             ret = decode_text_from_webwx(pformat(ret))
             raise Exception('Failed to create group:\n{}'.format(ret))
 
@@ -457,7 +458,7 @@ class Bot(object):
                     logger.exception('an error occurred in {}.'.format(config.func))
 
                 if self.auto_mark_as_read and not msg.type == SYSTEM and msg.sender != self.self:
-                    from wxpy import ResponseError
+                    from .. import ResponseError
                     try:
                         msg.chat.mark_as_read()
                     except ResponseError as e:

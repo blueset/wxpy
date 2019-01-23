@@ -15,8 +15,8 @@ def get_context_user_id(msg, max_len=32, re_sub=r'[^a-zA-Z\d]'):
     :return: 上下文用户 ID
     """
 
-    from wxpy.api.messages import Message
-    from wxpy.api.chats import Group
+    from ..api.messages import Message
+    from ..api.chats import Group
 
     # 当 msg 不为消息对象时，返回 None
     if not isinstance(msg, Message):

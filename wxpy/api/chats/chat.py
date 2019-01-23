@@ -7,10 +7,10 @@ import re
 import time
 from functools import partial, wraps
 
-from wxpy.api.consts import ATTACHMENT, PICTURE, TEXT, VIDEO
-from wxpy.compatible import *
-from wxpy.compatible.utils import force_encoded_string_output
-from wxpy.utils import handle_response
+from ...api.consts import ATTACHMENT, PICTURE, TEXT, VIDEO
+from ...compatible import *
+from ...compatible.utils import force_encoded_string_output
+from ...utils import handle_response, PuidMap
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ def wrapped_send(msg_type):
             # 加入被装饰函数返回值中的属性字典
             sent_attrs.update(sent_attrs_from_method)
 
-            from wxpy import SentMessage
+            from ... import SentMessage
             sent = SentMessage(attributes=sent_attrs)
             self.bot.messages.append(sent)
 
@@ -83,6 +83,7 @@ class Chat(object):
     """
     单个用户 (:class:`User`) 和群聊 (:class:`Group`) 的基础类
     """
+    SYSTEM_ACCOUNTS = PuidMap.SYSTEM_ACCOUNTS
 
     def __init__(self, raw, bot):
 
@@ -117,10 +118,8 @@ class Chat(object):
         """
         该聊天对象的昵称 (好友、群员的昵称，或群名称)
         """
-        if self.user_name == 'filehelper':
-            return '文件传输助手'
-        elif self.user_name == 'fmessage':
-            return '好友请求'
+        if self.user_name in Chat.SYSTEM_ACCOUNTS:
+            return Chat.SYSTEM_ACCOUNTS[self.user_name]
         else:
             return self.raw.get('NickName')
 
@@ -172,7 +171,7 @@ class Chat(object):
         """
 
         if msg is None:
-            msg = 'Hello from wxpy!'
+            msg = 'Hello from ..!'
         else:
             msg = str(msg)
 
@@ -181,40 +180,43 @@ class Chat(object):
     # Todo: 发送后可获取到 media_id
 
     @wrapped_send(PICTURE)
-    def send_image(self, path, media_id=None):
+    def send_image(self, path, file=None, media_id=None):
         """
         发送图片
 
-        :param path: 文件路径
+        :param path: 文件路径或文件名
         :param media_id: 设置后可省略上传
+        :param file: 文件对象
         :rtype: :class:`wxpy.SentMessage`
         """
 
-        return dict(fileDir=path, mediaId=media_id), locals()
+        return dict(fileDir=path, mediaId=media_id, file_=file), locals()
 
     @wrapped_send(ATTACHMENT)
-    def send_file(self, path, media_id=None):
+    def send_file(self, path, file=None, media_id=None):
         """
         发送文件
 
-        :param path: 文件路径
+        :param path: 文件路径或文件名
         :param media_id: 设置后可省略上传
+        :param file: 文件对象
         :rtype: :class:`wxpy.SentMessage`
         """
 
-        return dict(fileDir=path, mediaId=media_id), locals()
+        return dict(fileDir=path, mediaId=media_id, file_=file), locals()
 
     @wrapped_send(VIDEO)
-    def send_video(self, path=None, media_id=None):
+    def send_video(self, path=None, file=None, media_id=None):
         """
         发送视频
 
-        :param path: 文件路径
+        :param path: 文件路径或文件名
         :param media_id: 设置后可省略上传
+        :param file: 文件对象
         :rtype: :class:`wxpy.SentMessage`
         """
 
-        return dict(fileDir=path, mediaId=media_id), locals()
+        return dict(fileDir=path, mediaId=media_id, file_=file), locals()
 
     @wrapped_send(None)
     def send_raw_msg(self, raw_type, raw_content, uri=None, msg_ext=None):
@@ -241,7 +243,7 @@ class Chat(object):
 
         uri = uri or '/webwxsendmsg'
 
-        from wxpy.utils import BaseRequest
+        from ...utils import BaseRequest
         req = BaseRequest(self.bot, uri=uri)
 
         msg = {
@@ -272,7 +274,7 @@ class Chat(object):
         消除当前聊天对象的未读提示小红点
         """
 
-        from wxpy.utils import BaseRequest
+        from ...utils import BaseRequest
         req = BaseRequest(
             bot=self.bot,
             # itchat 中的 pass_ticket 已经预先编码了
@@ -325,6 +327,8 @@ class Chat(object):
         elif isinstance(self, Member):
             kwargs = dict(userName=self.user_name, chatroomUserName=self.group.user_name)
         elif isinstance(self, User):
+            kwargs = dict(userName=self.user_name, chatroomUserName=None)
+        elif self.user_name:
             kwargs = dict(userName=self.user_name, chatroomUserName=None)
         else:
             raise TypeError('expected `Chat`, got`{}`'.format(type(self)))

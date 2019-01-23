@@ -1,7 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
-from wxpy.compatible.utils import force_encoded_string_output
+from ...compatible.utils import force_encoded_string_output
 
 
 class Article(object):

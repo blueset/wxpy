@@ -5,7 +5,7 @@ import logging
 import time
 from functools import wraps
 
-from wxpy.exceptions import ResponseError
+from ..exceptions import ResponseError
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +53,8 @@ def mutual_friends(*args):
     :rtype: :class:`wxpy.Chats`
     """
 
-    from wxpy.api.bot import Bot
-    from wxpy.api.chats import Chats, User
+    from ..api.bot import Bot
+    from ..api.chats import Chats, User
 
     class FuzzyUser(User):
         def __init__(self, user):

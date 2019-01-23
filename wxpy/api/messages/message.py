@@ -17,11 +17,11 @@ except ImportError:
 
     html = HTMLParser()
 
-from wxpy.api.chats import Chat, Group, Member, User
-from wxpy.compatible.utils import force_encoded_string_output
-from wxpy.utils import wrap_user_name, repr_message
+from ...api.chats import Chat, Group, Member, User
+from ...compatible.utils import force_encoded_string_output
+from ...utils import wrap_user_name, repr_message
 from .article import Article
-from ..consts import ATTACHMENT, CARD, FRIENDS, MAP, PICTURE, RECORDING, SHARING, TEXT, VIDEO
+from ..consts import ATTACHMENT, CARD, FRIENDS, MAP, PICTURE, RECORDING, SHARING, TEXT, VIDEO, NOTE
 from ...compatible import *
 
 logger = logging.getLogger(__name__)
@@ -133,6 +133,7 @@ class Message(object):
 
         _text = self.raw.get('Text')
         if callable(_text) and self.type in (PICTURE, RECORDING, ATTACHMENT, VIDEO):
+            logger.debug("[%s] Calling downloader function ID %s", self.text, id(_text))
             return _text(save_path)
         else:
             raise ValueError('download method not found, or invalid message type')
@@ -221,7 +222,7 @@ class Message(object):
         * `cover`: 封面或缩略图 URL
         """
 
-        from wxpy import MP
+        from ...api.chats import MP
         if self.type == SHARING and isinstance(self.sender, MP):
             tree = ETree.fromstring(self.raw['Content'])
             # noinspection SpellCheckingInspection
@@ -300,6 +301,17 @@ class Message(object):
         except (TypeError, KeyError, ValueError, ETree.ParseError):
             pass
 
+    @property
+    def recalled_message_id(self):
+        """被撤回消息的消息 ID"""
+        if self.type == NOTE and 'revokemsg' in self.raw['Content']:
+            try:
+                element = ETree.fromstring(self.raw['Content']).find('.//msgid')
+                return int(element.text)
+            except (TypeError, KeyError, ValueError, ETree.ParseError):
+                pass
+
+
     # chats
 
     @property
@@ -327,6 +339,15 @@ class Message(object):
         """
 
         return self._get_chat_by_user_name(self.raw.get('FromUserName'))
+
+    @property
+    def author(self):
+        """
+        消息的实际发送者（群成员或私聊）
+
+        :rtype: :class:`wxpy.User`, :class:`wxpy.Member`
+        """
+        return self.member or self.sender
 
     @property
     def receiver(self):

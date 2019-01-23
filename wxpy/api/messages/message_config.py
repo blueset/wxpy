@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 import logging
 import weakref
 
-from wxpy.compatible.utils import force_encoded_string_output
-from wxpy.utils import ensure_list
+from ...compatible.utils import force_encoded_string_output
+from ...utils import ensure_list
 
 logger = logging.getLogger(__name__)
 

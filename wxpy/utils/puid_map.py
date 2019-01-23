@@ -6,7 +6,9 @@ import os
 import pickle
 
 import threading
-from wxpy.compatible import PY2
+from typing import Optional
+
+from ..compatible import PY2
 if PY2:
     from UserDict import UserDict
 else:
@@ -41,6 +43,41 @@ PuidMap 中包含 4 个 dict，分别为
 
 
 class PuidMap(object):
+
+    SYSTEM_ACCOUNTS = {
+        'filehelper': '文件传输助手',
+        'newsapp': '新闻应用 (newsapp)',
+        'fmessage': '朋友推荐消息',
+        'weibo': '微博账号 (weibo)',
+        'qqmail': 'QQ邮箱 (qqmail)',
+        'tmessage': '锑字消息 (tmessage)',
+        'qmessage': '秋字消息 (qmessage)',
+        'qqsync': 'QQ同步 (qqsync)',
+        'floatbottle': '漂流瓶',
+        'lbsapp': '位置分享 (lbsapp)',
+        'shakeapp': '摇一摇',
+        'medianote': '语音记事本',
+        'qqfriend': 'QQ好友 (qqfriend)',
+        'readerapp': '阅读应用 (readerapp)',
+        'blogapp': '博客应用 (blogapp)',
+        'facebookapp': 'Facebook',
+        'masssendapp': '群发应用 (masssendapp)',
+        'meishiapp': '美食应用 (meishiapp)',
+        'feedsapp': '订阅应用 (feedsapp)',
+        'voip': '网络通话 (voip)',
+        'blogappweixin': '微信博客 (blogappweixin)',
+        'weixin': '微信团队',
+        'brandsessionholder': '品牌会话 (brandsessionholder)',
+        'weixinreminder': '微信提醒 (weixinreminder)',
+        'officialaccounts': '官方账号 (officialaccounts)',
+        'notification_messages': '通知消息 (notification_messages)',
+        'wxitil': '微习提尔 (wxitil)',
+        'userexperience_alarm': '用户体验 (userexperience_alarm)'
+    }
+
+    DUMP_TIMEOUT = 30
+    """Number of seconds before auto dump upon lookups."""
+
     def __init__(self, path):
         """
         用于获取聊天对象的 puid (持续有效，并且稳定唯一的用户ID)，和保存映射关系
@@ -59,6 +96,8 @@ class PuidMap(object):
 
         if os.path.exists(self.path):
             self.load()
+
+        self._dump_task: Optional[threading.Timer] = None
 
         atexit.register(self.dump)
 
@@ -85,6 +124,9 @@ class PuidMap(object):
         """
 
         with self._thread_lock:
+
+            if chat.user_name in PuidMap.SYSTEM_ACCOUNTS:
+                return chat.user_name
 
             if not (chat.user_name and chat.nick_name):
                 return
@@ -126,7 +168,17 @@ class PuidMap(object):
 
             self.captions[new_caption] = puid
 
+            self.activate_dump()
+
             return puid
+
+    def activate_dump(self):
+        """Activate dump timeout"""
+        if self._dump_task:
+            self._dump_task.cancel()
+
+        self._dump_task = threading.Timer(self.DUMP_TIMEOUT, self.dump)
+        self._dump_task.start()
 
     def dump(self):
         """
@@ -134,6 +186,9 @@ class PuidMap(object):
         """
         with open(self.path, 'wb') as fp:
             pickle.dump((self.user_names, self.wxids, self.remark_names, self.captions), fp)
+
+        if self._dump_task:
+            self._dump_task = None
 
     def load(self):
         """
@@ -201,7 +256,7 @@ def get_caption(chat):
 
 
 def match_captions(old, new):
-    if new[0]:
+    if new[0] and old:
         for i in range(4):
             if old[i] and new[i] and old[i] != new[i]:
                 return False
@@ -209,4 +264,7 @@ def match_captions(old, new):
 
 
 def merge_captions(old, new):
-    return tuple(new[i] or old[i] for i in range(4))
+    if not old:
+        return new
+    else:
+        return tuple(new[i] or old[i] for i in range(4))
